@@ -125,6 +125,70 @@ class UI {
       });
     });
   }
+
+  getCategory = (data) => {
+    let categories = data.map((item) => {
+      return item.category;
+    });
+    return categories;
+  };
+
+  searchCheck(data) {
+    let ctg = [...new Set(this.getCategory(data))];
+
+    let checkEl = document.querySelector('.checks');
+    // show checkboxes in page
+    ctg.forEach((item) => {
+      let div = document.createElement('div');
+      div.classList.add('form-check');
+      div.innerHTML += `
+    
+      <input class="form-check-input" type="checkbox" value="${item}" id="${item}" checked>
+      <label class="form-check-label" for="${item}">
+      ${item}
+      </label>
+    
+      `;
+      checkEl.appendChild(div);
+    });
+
+    let allCheckboxes = document.querySelectorAll('.form-check-input');
+
+    [...allCheckboxes].forEach((check) => {
+      check.addEventListener('click', (e) => {
+        // select all checked inputs
+        let checkedEl = document.querySelectorAll('.form-check-input:checked');
+        if (e.target.checked) {
+          e.target.setAttribute('checked', '');
+        } else {
+          e.target.removeAttribute('checked');
+        }
+
+        let dtArr = [];
+
+        checkedEl.forEach((el) => {
+          data.filter((dt) => {
+            if (dt.category === el.id) {
+              dtArr.push(dt);
+              this.showData(dtArr);
+              this.addToCart();
+            }
+          });
+        });
+
+        if (dtArr.length < 1) {
+          myCard.innerHTML = '';
+        }
+      });
+
+      searchInput.addEventListener('focus', () => {
+        check.checked = true;
+        check.setAttribute('checked', '');
+        this.showData(data);
+        this.addToCart();
+      });
+    });
+  }
 }
 
 class Storage {
@@ -169,6 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
       loading = false;
       ui.showData(data);
       Storage.saveProduct(data);
+
+      ui.searchCheck(data);
     })
     .then(() => {
       ui.addToCart();
