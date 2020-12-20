@@ -172,6 +172,7 @@ class UI {
               dtArr.push(dt);
               this.showData(dtArr);
               this.addToCart();
+              this.singleProduct();
             }
           });
         });
